@@ -422,12 +422,12 @@ def read_arg_required(
             n_required -= 1
             continue
         elif src.hasNext() and n_required > 0:
-            first_token = next(src)
-            arg_string = str(first_token)
-            if src.hasNext() and first_token.category == TC.Escape:
-                second_token = next(src)
-                arg_string += str(second_token)
-            args.append('{%s}' % arg_string)
+            next_token = next(src)
+            if next_token.category == TC.Escape:
+                name, _ = read_command(src, 0, 0, tolerance=tolerance, mode=mode)
+                args.append(TexCmd(name, position=next_token.position))
+            else:
+                args.append('{%s}' % next_token)
             n_required -= 1
             continue
 
