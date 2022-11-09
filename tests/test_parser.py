@@ -175,12 +175,14 @@ def test_inline_math():
     \begin{itemize}
     \item This $e^{i\pi} = -1$
     \item How \(e^{i\pi} + 1 = 0\)
-    \item Therefore!
+    \item Therefore! $a$$b$
     \end{itemize}""")
     assert r'$e^{i\pi} = -1$' in str(soup), 'Math environment not kept intact.'
     assert r'$e^{i\pi} = -1$' in str(list(soup.itemize.children)[0]), 'Environment incorrectly associated.'
     assert r'\(e^{i\pi} + 1 = 0\)' in str(soup), 'Math environment not kept intact.'
     assert r'\(e^{i\pi} + 1 = 0\)' in str(list(soup.itemize.children)[1]), 'Environment incorrectly associated.'
+    assert '$a$$b$' in str(soup), 'Math environment not kept intact.'
+    assert '$a$$b$' in str(list(soup.itemize.children)[2]), 'Environment incorrectly associated.'
 
 
 def test_escaped_characters():
