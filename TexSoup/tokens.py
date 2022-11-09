@@ -39,7 +39,7 @@ def next_token(text, prev=None):
     :param Union[str,iterator,Buffer] text: LaTeX to process
     :return str: the token
 
-    >>> b = categorize(r'\textbf{Do play\textit{nice}.}   $$\min_w \|w\|_2^2$$')
+    >>> b = categorize(r'\textbf{Do play\textit{nice}.}   $\min_w \|w\|_2^2$')
     >>> print(next_token(b), next_token(b), next_token(b), next_token(b))
     \ textbf { Do play
     >>> print(next_token(b), next_token(b), next_token(b), next_token(b))
@@ -169,16 +169,10 @@ def tokenize_math_sym_switch(text, prev=None):
 
     >>> tokenize_math_sym_switch(categorize(r'$\min_x$ \command'))
     '$'
-    >>> tokenize_math_sym_switch(categorize(r'$$\min_x$$ \command'))
-    '$$'
     """
     if text.peek().category == CC.MathSwitch:
-        if text.peek(1) and text.peek(1).category == CC.MathSwitch:
-            result = Token(text.forward(2), text.position)
-            result.category = TC.DisplayMathSwitch
-        else:
-            result = Token(text.forward(1), text.position)
-            result.category = TC.MathSwitch
+        result = Token(text.forward(1), text.position)
+        result.category = TC.MathSwitch
         return result
 
 
