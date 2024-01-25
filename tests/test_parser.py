@@ -409,15 +409,23 @@ def test_grouping_optional_argument():
 
 def test_zero_argument_signatures():
     """Tests that specific commands that do not take arguments are parsed correctly."""
-    soup = TexSoup(r"$\cap[\cup[\in[\notin[\infty[$")
+    soup = TexSoup(r"$\cap[\cup[\in[\notin[\infty[$\centering{}")
     assert len(soup.find("cap").args) == 0
     assert len(soup.find("cup").args) == 0
     assert len(soup.find("in").args) == 0
     assert len(soup.find("notin").args) == 0
     assert len(soup.find("infty").args) == 0
+    assert len(soup.find("centering").args) == 0
 
     soup = TexSoup(r"\begin{equation} \cup [0, \infty) \end{equation}")
     assert len(soup.find("cup").args) == 0
+
+
+def test_non_zero_argument_signatures():
+    """Tests that specific commands that take arguments are parsed correctly."""
+    soup = TexSoup(r"\caption{the caption}{not the caption}")
+    assert len(soup.find("caption").args) == 1
+    assert str(soup.find("caption").args[0]) == "{the caption}"
 
 
 ##############

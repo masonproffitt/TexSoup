@@ -58,6 +58,10 @@ SIGNATURES = {
     'longmapsto': (0, 0),
     'infty': (0, 0),
     'noindent': (0, 0),
+    'caption': (1, 1),
+    'centering': (0, 0),
+    'includegraphics': (1, 2),
+    'label': (1, 0),
 }
 
 
