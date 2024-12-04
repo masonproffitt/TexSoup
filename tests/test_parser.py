@@ -155,7 +155,7 @@ def test_ignore_environment():
     \begin{verbatim}
     \min_x \|Ax - b\|_2^2 + \lambda \|x\|_2^2
     \end{verbatim}
-    $$\min_x \|Ax - b\|_2^2 + \lambda \|x\|_1^2$$
+    $\min_x \|Ax - b\|_2^2 + \lambda \|x\|_1^2$
     \[[0,1)\]
     \begin{flalign} will break if TexSoup starts parsing math[ \end{flalign}
     \begin{align*} hah [ \end{align*}
@@ -165,7 +165,7 @@ def test_ignore_environment():
     assert str(list(soup.children)[0]) == r'\begin{equation}\min_x \|Ax - b\|_2^2\end{equation}'
     # hacky workaround for odd string types
     assert verbatim[0] == '\n' and verbatim[1:].startswith('   '), 'Whitespace not preserved: {}'.format(verbatim)
-    assert str(list(soup.children)[2]) == r'$$\min_x \|Ax - b\|_2^2 + \lambda \|x\|_1^2$$'
+    assert str(list(soup.children)[2]) == r'$\min_x \|Ax - b\|_2^2 + \lambda \|x\|_1^2$'
     assert str(list(soup.children)[3]) == r'\[[0,1)\]'
 
 
@@ -175,12 +175,14 @@ def test_inline_math():
     \begin{itemize}
     \item This $e^{i\pi} = -1$
     \item How \(e^{i\pi} + 1 = 0\)
-    \item Therefore!
+    \item Therefore! $a$$b$
     \end{itemize}""")
     assert r'$e^{i\pi} = -1$' in str(soup), 'Math environment not kept intact.'
     assert r'$e^{i\pi} = -1$' in str(list(soup.itemize.children)[0]), 'Environment incorrectly associated.'
     assert r'\(e^{i\pi} + 1 = 0\)' in str(soup), 'Math environment not kept intact.'
     assert r'\(e^{i\pi} + 1 = 0\)' in str(list(soup.itemize.children)[1]), 'Environment incorrectly associated.'
+    assert '$a$$b$' in str(soup), 'Math environment not kept intact.'
+    assert '$a$$b$' in str(list(soup.itemize.children)[2]), 'Environment incorrectly associated.'
 
 
 def test_escaped_characters():
@@ -407,15 +409,23 @@ def test_grouping_optional_argument():
 
 def test_zero_argument_signatures():
     """Tests that specific commands that do not take arguments are parsed correctly."""
-    soup = TexSoup(r"$\cap[\cup[\in[\notin[\infty[$")
+    soup = TexSoup(r"$\cap[\cup[\in[\notin[\infty[$\centering{}")
     assert len(soup.find("cap").args) == 0
     assert len(soup.find("cup").args) == 0
     assert len(soup.find("in").args) == 0
     assert len(soup.find("notin").args) == 0
     assert len(soup.find("infty").args) == 0
+    assert len(soup.find("centering").args) == 0
 
     soup = TexSoup(r"\begin{equation} \cup [0, \infty) \end{equation}")
     assert len(soup.find("cup").args) == 0
+
+
+def test_non_zero_argument_signatures():
+    """Tests that specific commands that take arguments are parsed correctly."""
+    soup = TexSoup(r"\caption{the caption}{not the caption}")
+    assert len(soup.find("caption").args) == 1
+    assert str(soup.find("caption").args[0]) == "{the caption}"
 
 
 def test_comment_before_argument():
@@ -455,11 +465,11 @@ def test_whitespace_in_command():
 
 def test_math_environment_whitespace():
     """Tests that math environments are untouched."""
-    soup = TexSoup(r"""$$\lambda
-    \Sigma$$ But don't mind me \$3.00""")
+    soup = TexSoup(r"""$\lambda
+    \Sigma$ But don't mind me \$3.00""")
     children, contents = list(soup.children), list(soup.contents)
     assert '\n' in str(children[0]), 'Whitesapce not preserved in math env.'
-    assert len(children) == 1 and children[0].name == '$$', 'Math env wrong'
+    assert len(children) == 1 and children[0].name == '$', 'Math env wrong'
     assert r'\$' == contents[2], 'Dollar sign not escaped!'
     soup = TexSoup(r"""\gamma = \beta\begin{notescaped}\gamma = \beta\end{notescaped}
     \begin{equation*}\beta = \gamma\end{equation*}""")
@@ -598,9 +608,6 @@ def test_unclosed_environments():
 
 def test_unclosed_math_environments():
     """Tests that unclosed math environment results in error."""
-    with pytest.raises(EOFError):
-        TexSoup(r"""$$\min_x \|Xw-y\|_2^2""")
-
     with pytest.raises(EOFError):
         TexSoup(r"""$\min_x \|Xw-y\|_2^2""")
 
