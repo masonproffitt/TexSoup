@@ -455,6 +455,8 @@ def read_arg_required(
             if next_token.category == TC.Escape:
                 name, _ = read_command(src, 0, 0, tolerance=tolerance, mode=mode)
                 args.append(TexCmd(name, position=next_token.position))
+            elif next_token.category == TC.Comment:
+                continue
             else:
                 args.append('{%s}' % next_token)
             n_required -= 1
