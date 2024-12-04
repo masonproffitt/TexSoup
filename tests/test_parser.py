@@ -418,6 +418,13 @@ def test_zero_argument_signatures():
     assert len(soup.find("cup").args) == 0
 
 
+def test_comment_before_argument():
+    """Test that comments are not interpreted as arguments"""
+    soup = TexSoup("\\caption%\n{the caption}")
+    assert len(soup.find("caption").args) == 1
+    assert str(soup.find("caption").args[0]) == "{the caption}"
+
+
 ##############
 # FORMATTING #
 ##############
