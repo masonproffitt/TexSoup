@@ -63,7 +63,8 @@ SIGNATURES = {
     'caption': (1, 1),
     'centering': (0, 0),
     'includegraphics': (1, 2),
-    'label': (1, 0),
+    'input': (1, 0),
+    'include': (1, 0),
 }
 
 
