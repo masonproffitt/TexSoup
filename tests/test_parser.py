@@ -427,6 +427,10 @@ def test_non_zero_argument_signatures():
     assert len(soup.find("caption").args) == 1
     assert str(soup.find("caption").args[0]) == "{the caption}"
 
+    soup = TexSoup(r"\input file.tex")
+    assert len(soup.find("input").args) == 1
+    assert str(soup.find("input").args[0]) == "{ file.tex}"
+
 
 def test_comment_before_argument():
     """Test that comments are not interpreted as arguments"""
@@ -643,3 +647,22 @@ def test_tolerance_env_unclosed():
     \end{envb}""", tolerance=1)
     assert len(list(soup.enva.contents)) == 1
     assert soup.end
+
+def test_special_command():
+    """Test that we tolerate unclosed environments when in special mode."""
+    # source:
+    # https://github.com/alvinwan/TexSoup/issues/135#issuecomment-1705749106
+    texsrc = r"""
+    \documentclass[useAMS,usenatbib]{mnras}
+    \newcommand{\beq}{\begin{equation}}
+    \newcommand{\eeq}{\end{equation}}
+
+    \begin{document}
+    \begin{itemize}
+    \item something
+    \end{itemize}
+
+    \end{document}
+    """
+    soup = TexSoup(texsrc)
+    assert soup
