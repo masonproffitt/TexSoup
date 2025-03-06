@@ -427,6 +427,10 @@ def test_non_zero_argument_signatures():
     assert len(soup.find("caption").args) == 1
     assert str(soup.find("caption").args[0]) == "{the caption}"
 
+    soup = TexSoup(r"\input file.tex")
+    assert len(soup.find("input").args) == 1
+    assert str(soup.find("input").args[0]) == "{ file.tex}"
+
 
 def test_comment_before_argument():
     """Test that comments are not interpreted as arguments"""
