@@ -65,6 +65,7 @@ SIGNATURES = {
     'includegraphics': (1, 2),
     'input': (1, 0),
     'include': (1, 0),
+    'subfloat': (1, 2),
 }
 
 
